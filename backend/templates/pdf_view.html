@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PDF Reader</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css" />
+  <style>
+    #pdf-viewer { width: 90vw; margin: auto; }
+    canvas { border: 1px solid #ccc; margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">PDF Viewer</h2>
+  <div id="pdf-viewer"></div>
+  <script>
+    // ⚠️ 用 Jinja2 傳 pdf_id
+    const pdfUrl = "/api/pdf_download/{{ pdf_id }}";
+    console.log("PDF URL:", pdfUrl);
+    const viewer = document.getElementById('pdf-viewer');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+      for(let pageNum=1; pageNum<=pdf.numPages; pageNum++) {
+        pdf.getPage(pageNum).then(page => {
+          const viewport = page.getViewport({ scale: 1.5 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          viewer.appendChild(canvas);
+          const ctx = canvas.getContext('2d');
+          page.render({ canvasContext: ctx, viewport: viewport });
+          // 加上文字圖層
+          page.getTextContent().then(textContent => {
+            const textLayerDiv = document.createElement('div');
+            textLayerDiv.className = "textLayer";
+            textLayerDiv.style.position = "absolute";
+            textLayerDiv.style.left = canvas.offsetLeft + "px";
+            textLayerDiv.style.top = canvas.offsetTop + "px";
+            textLayerDiv.style.width = canvas.width + "px";
+            textLayerDiv.style.height = canvas.height + "px";
+            viewer.appendChild(textLayerDiv);
+            pdfjsLib.renderTextLayer({
+              textContent: textContent,
+              container: textLayerDiv,
+              viewport: viewport,
+              textDivs: []
+            });
+          });
+        });
+      }
+    }).catch(err => {
+      // 這裡直接在畫面上顯示錯誤
+      viewer.innerHTML = `<div style="color:red;">❌ PDF載入失敗：${err.message}</div>`;
+      console.error(err);
+    });
+  </script>
+</body>
+</html>
