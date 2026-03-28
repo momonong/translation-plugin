@@ -1,0 +1,70 @@
+# ─── 作業系統 ───
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ─── 編輯器 / IDE ───
+.idea/
+*.code-workspace
+
+# 若團隊要共用除錯設定，可改為只忽略本機覆寫：
+# .vscode/*
+# !.vscode/extensions.json
+# !.vscode/launch.json
+
+# ─── 機密與本機設定（勿提交） ───
+.env
+.env.*
+!.env.example
+*.pem
+*-key.json
+*credentials*.json
+service-account*.json
+gcloud-service-key.json
+
+# ─── 前端（Vite / Node） ───
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# ─── 後端（Python） ───
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.py[cod]
+backend/*.pyo
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/htmlcov/
+backend/.coverage
+backend/coverage.xml
+backend/*.egg-info/
+backend/.eggs/
+backend/dist/
+backend/build/
+
+# Poetry（若之後加入 lock 檔）
+# backend/poetry.lock
+
+# ─── 執行時產物與大型資料 ───
+# 知識圖譜與篩選後 CSV 請依 README 下載或自行產生（保留空目錄用 .gitkeep）
+backend/data/*
+!backend/data/.gitkeep
+
+# 上傳的 PDF 快取目錄
+backend/pdf_files/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ─── 日誌與暫存 ───
+*.log
+tmp/
+temp/
+.cache/
