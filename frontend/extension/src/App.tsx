@@ -151,6 +151,9 @@ function PdfViewerPage() {
       <Typography variant="h5" gutterBottom>
         PDF 預覽
       </Typography>
+      <Alert severity="info" sx={{ mb: 2 }}>
+        💡 <strong>OCR 文字辨識功能：</strong> 請按住 <code>Alt</code> (Windows) 或 <code>Option / ⌘ Command</code> (Mac) 並用滑鼠拖曳框選 PDF 上的文字區域，即可自動進行文字辨識。
+      </Alert>
       <Document
         file={`${API_BASE_URL}/api/pdf_download/${pdfId}`}
         onLoadSuccess={({ numPages }) => setNumPages(numPages)}

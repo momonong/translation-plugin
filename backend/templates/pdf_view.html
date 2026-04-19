@@ -11,7 +11,10 @@
   </style>
 </head>
 <body>
-  <h2 style="text-align:center;">PDF Viewer</h2>
+  <h2 style="text-align:center; margin-bottom: 5px;">PDF Viewer</h2>
+  <div style="text-align:center; margin-bottom: 20px; font-family: sans-serif; color: #555; background: #f0f8ff; padding: 10px; border-radius: 8px; width: 80vw; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    💡 <strong>OCR 文字辨識功能：</strong> 請按住 <code>Alt</code> (Windows) 或 <code>Option / ⌘ Command</code> (Mac) 並用滑鼠拖曳框選 PDF 上的圖片或文字區域，即可自動進行文字辨識。
+  </div>
   <div id="pdf-viewer"></div>
   <script>
     // ⚠️ 用 Jinja2 傳 pdf_id 與 root_path
