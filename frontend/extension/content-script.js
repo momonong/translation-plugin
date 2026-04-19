@@ -268,6 +268,11 @@ async function fetchJSON(url, opts, ms) {
   opts = opts || {};
   ms = ms || 10000;
   
+  console.log(`[fetchJSON Debug] API_BASE_URL: ${API_BASE_URL}`);
+  console.log(`[fetchJSON Debug] Request URL: ${url}`);
+  console.log(`[fetchJSON Debug] HTTP Method: ${opts.method || 'GET'}`);
+  console.log(`[fetchJSON Debug] Context: content-script`);
+
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({
       type: "PROXY_FETCH",

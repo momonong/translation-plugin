@@ -5,9 +5,10 @@ from api.routers import keywords, related_terms, graph, translate, upload_pdf, v
 from tools.load_graph import load_graph_from_pickle
 
 # Get root_path from environment variable for flexible deployment (e.g., /lexilight)
-ROOT_PATH = os.getenv("ROOT_PATH", "")
+# ROOT_PATH = os.getenv("ROOT_PATH", "")
 
-app = FastAPI(root_path=ROOT_PATH)
+# app = FastAPI(root_path=ROOT_PATH)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,

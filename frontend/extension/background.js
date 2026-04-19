@@ -1,7 +1,7 @@
 // extension/background.js
 
-// 統一的 API_BASE_URL，所有透過 background 代理的請求都會使用這個 base
-const API_BASE_URL = "https://cball.computing.ncku.edu.tw";
+// 統一的 API_BASE_URL
+const API_BASE_URL = "https://cball.computing.ncku.edu.tw/lexilight";
 
 // 安裝/更新時：僅建立一個右鍵選單「開啟 PDF 閱讀器」
 chrome.runtime.onInstalled.addListener(() => {
@@ -33,16 +33,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   
   if (message.type === "PROXY_FETCH") {
-    // 確保 URL 是以我們統一的 API_BASE_URL 開頭，避免 content script 帶舊的 localhost
-    const API_BASE_URL = "https://cball.computing.ncku.edu.tw/lexilight";
-    
     let targetUrl = message.url;
+    
+    // 補齊不完整的 URL 或替換掉舊的 localhost
     if (targetUrl.includes("http://localhost:8000")) {
       targetUrl = targetUrl.replace("http://localhost:8000", API_BASE_URL);
+    } else if (targetUrl.startsWith("/")) {
+      targetUrl = API_BASE_URL + targetUrl;
     } else if (!targetUrl.startsWith("http")) {
-      // 處理相對路徑
-      targetUrl = API_BASE_URL + (targetUrl.startsWith("/") ? "" : "/") + targetUrl;
+      targetUrl = API_BASE_URL + "/" + targetUrl;
     }
+    
+    // 避免重複的 /lexilight/lexilight
+    if (targetUrl.includes("/lexilight/lexilight")) {
+      targetUrl = targetUrl.replace("/lexilight/lexilight", "/lexilight");
+    }
+
+    console.log("[PROXY_FETCH] Original URL:", message.url);
+    console.log("[PROXY_FETCH] Target URL:", targetUrl);
+    console.log("[PROXY_FETCH] Method:", message.options?.method || 'GET');
     
     // 執行實際的 API 請求
     fetch(targetUrl, message.options)
@@ -53,16 +62,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           try {
             data = JSON.parse(raw);
           } catch (e) {
+            console.error("[PROXY_FETCH] Non-JSON response:", raw.slice(0, 300));
             return sendResponse({ error: `Non-JSON response (HTTP ${res.status}): ${raw.slice(0, 300)}` });
           }
         }
         if (!res.ok) {
           const msg = (data && (data.detail || data.message)) || raw || (`HTTP ${res.status}`);
+          console.error(`[PROXY_FETCH] HTTP Error ${res.status}:`, msg);
           return sendResponse({ error: `HTTP ${res.status}: ${msg}` });
         }
+        console.log("[PROXY_FETCH] Success!");
         sendResponse({ data: data });
       })
       .catch((error) => {
+        console.error("[PROXY_FETCH] Network Error:", error);
         sendResponse({ error: error.message || String(error) });
       });
       
