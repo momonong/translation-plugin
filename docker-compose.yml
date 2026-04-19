@@ -1,10 +1,17 @@
+# ==========================================
+# Development / Build Configuration
+# Usage: docker compose build && docker compose push
+# ==========================================
 services:
   lexilight_backend:
     build: 
       context: ./backend
       dockerfile: Dockerfile
+      tags:
+        - "momonong/lexilight:${IMAGE_TAG:-latest}"
+        - "momonong/lexilight:latest"
     image: momonong/lexilight:${IMAGE_TAG:-latest}
-    container_name: lexilight_backend
+    container_name: lexilight_backend_dev
     env_file:
       - .env
     environment:

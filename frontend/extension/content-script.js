@@ -263,27 +263,34 @@ function showOcrFloat(text, left, top) {
 
 
 // ====== 穩定 fetch：帶逾時、HTTP狀態與非JSON錯誤訊息 ======
+// [Refactored for MV3] 將原本直接打跨網域 API 的行為，改為透過 background service worker 代理
 async function fetchJSON(url, opts, ms) {
   opts = opts || {};
   ms = ms || 10000;
-  const controller = new AbortController();
-  const timer = setTimeout(function(){ controller.abort("timeout"); }, ms);
-  try {
-    const res = await fetch(url, Object.assign({}, opts, { signal: controller.signal }));
-    const raw = await res.text();
-    var data = {};
-    if (raw) {
-      try { data = JSON.parse(raw); }
-      catch(e) { throw new Error("Non-JSON response (HTTP " + res.status + "): " + raw.slice(0, 300)); }
-    }
-    if (!res.ok) {
-      const msg = (data && (data.detail || data.message)) || raw || ("HTTP " + res.status);
-      throw new Error("HTTP " + res.status + ": " + msg);
-    }
-    return data;
-  } finally {
-    clearTimeout(timer);
-  }
+  
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({
+      type: "PROXY_FETCH",
+      url: url, // 會交由 background 判斷是否需要加上 API_BASE_URL
+      options: {
+        method: opts.method || 'GET',
+        headers: opts.headers,
+        body: opts.body
+      },
+      timeout: ms
+    }, (response) => {
+      if (chrome.runtime.lastError) {
+        return reject(new Error("Extension Error: " + chrome.runtime.lastError.message));
+      }
+      if (!response) {
+        return reject(new Error("No response from background script."));
+      }
+      if (response.error) {
+        return reject(new Error(response.error));
+      }
+      resolve(response.data);
+    });
+  });
 }
 
 // ====== 顯示翻譯浮窗（雙擊選字時用）======
