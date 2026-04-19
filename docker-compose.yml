@@ -1,0 +1,22 @@
+services:
+  lexilight_backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    image: momonong/lexilight:${IMAGE_TAG:-latest}
+    container_name: lexilight_backend
+    env_file:
+      - .env
+    environment:
+      - ROOT_PATH=
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

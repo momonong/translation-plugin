@@ -1,9 +1,13 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routers import keywords, related_terms, graph, translate, upload_pdf, view_pdf, download_pdf, ocr
 from tools.load_graph import load_graph_from_pickle
 
-app = FastAPI()
+# Get root_path from environment variable for flexible deployment (e.g., /lexilight)
+ROOT_PATH = os.getenv("ROOT_PATH", "")
+
+app = FastAPI(root_path=ROOT_PATH)
 
 app.add_middleware(
     CORSMiddleware,

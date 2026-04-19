@@ -1,0 +1,28 @@
+# ==========================================
+# Production / Workstation Configuration
+# Usage: docker-compose -f docker-compose.prod.yml up -d
+# ==========================================
+services:
+  lexilight_backend:
+    image: momonong/lexilight:${IMAGE_TAG:-latest}
+    container_name: lexilight_backend
+    restart: unless-stopped
+    expose:
+      - "8080"
+    ports:
+      - "8005:8080"
+    env_file:
+      - .env
+    environment:
+      - ROOT_PATH=${ROOT_PATH:-/lexilight}
+    volumes:
+      # Using relative path, but you can change to absolute if preferred on workstation
+      - ./backend/data:/app/data
+    networks:
+      - default
+      - global-proxy-net
+
+networks:
+  default:
+  global-proxy-net:
+    external: true
