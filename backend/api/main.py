@@ -13,7 +13,7 @@ app.add_middleware(
     CORSMiddleware,
     # allow_origin_regex=r"^chrome-extension://.*$",
     allow_origins=["*"],  
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
