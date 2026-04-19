@@ -13,11 +13,10 @@ services:
       - "8005:8080"
     env_file:
       - .env
-    environment:
-      - ROOT_PATH=${ROOT_PATH:-/lexilight}
     volumes:
       # Using relative path, but you can change to absolute if preferred on workstation
       - ./backend/data:/app/data
+      - ./backend/pdf_files:/app/pdf_files
     networks:
       - default
       - global-proxy-net

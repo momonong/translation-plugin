@@ -14,9 +14,17 @@ router = APIRouter()
 @router.post("/upload_pdf")
 async def upload_pdf(request: Request, file: UploadFile = File(...)):
     pdf_id = save_and_return_pdf_id(file)
-    # 這裡要用 API_BASE_URL
-    # base_url = os.getenv("API_BASE_URL", "http://localhost:8080")
-    base_url = str(request.base_url).rstrip("/")
+    
+    # Get the protocol and host from headers (set by Nginx) or fallback to request
+    proto = request.headers.get("X-Forwarded-Proto", request.url.scheme)
+    host = request.headers.get("X-Forwarded-Host", request.headers.get("Host", request.url.netloc))
+    
+    # Use environment variable directly since app.root_path is commented out in main.py
+    root_path = os.getenv("ROOT_PATH", "/lexilight")
+    
+    # Construct the correct external URL
+    base_url = f"{proto}://{host}{root_path}"
     pdf_url = f"{base_url}/api/pdfview/{pdf_id}"
+    
     print("pdf_url:", pdf_url)
     return JSONResponse({"pdf_url": pdf_url})

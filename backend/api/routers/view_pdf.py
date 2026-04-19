@@ -16,6 +16,8 @@ async def view_pdf(request: Request, pdf_id: str):
     pdf_path = os.path.join(PDF_FOLDER, f"{pdf_id}.pdf")
     if not os.path.exists(pdf_path):
         raise HTTPException(status_code=404, detail="PDF not found")
+        
+    root_path = os.getenv("ROOT_PATH", "/lexilight")
     return templates.TemplateResponse(
-        "pdf_view.html", {"request": request, "pdf_id": pdf_id}
+        "pdf_view.html", {"request": request, "pdf_id": pdf_id, "root_path": root_path}
     )
