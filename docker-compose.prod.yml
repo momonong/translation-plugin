@@ -1,6 +1,6 @@
 # ==========================================
 # Production / Workstation Configuration
-# Usage: docker-compose -f docker-compose.prod.yml up -d
+# Usage: docker compose -f docker-compose.prod.yml up -d
 # ==========================================
 services:
   lexilight_backend:
@@ -14,9 +14,9 @@ services:
     env_file:
       - .env
     volumes:
-      # Using relative path, but you can change to absolute if preferred on workstation
       - ./backend/data:/app/data
       - ./backend/pdf_files:/app/pdf_files
+      - ./secret/lexilight-vision-sa.json:/app/secret/lexilight-vision-sa.json:ro
     networks:
       - default
       - global-proxy-net

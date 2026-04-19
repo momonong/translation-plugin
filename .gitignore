@@ -68,3 +68,5 @@ backend/pdf_files/
 tmp/
 temp/
 .cache/
+
+secret/
